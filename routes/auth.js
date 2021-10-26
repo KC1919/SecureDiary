@@ -6,7 +6,13 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const verify = require("../middlewares/verify");
 
+//Global variables to store users info
+let name = "",
+    email = "",
+    password = "";
+
 let otp;
+let changePassOtp;
 
 let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -16,6 +22,7 @@ let transporter = nodemailer.createTransport({
     }
 });
 
+//Creating Router
 const authRouter = express.Router();
 
 authRouter.get("/", async (req, res) => {
@@ -34,10 +41,20 @@ authRouter.get("/takeOTP", (req, res) => {
     res.render("otp");
 })
 
-//Global variables to store users info
-let name = "",
-    email = "",
-    password = "";
+authRouter.get("/forgot", (req, res) => {
+    res.render("forgot");
+})
+
+authRouter.get("/changePassword/:email", (req, res) => {
+    const email = req.params.email;
+    console.log(email);
+    res.render("newPassword", {
+        "email": email
+    });
+})
+
+
+//POST Routes
 
 authRouter.post("/register", async (req, res) => {
 
@@ -121,6 +138,8 @@ authRouter.post("/otp", async (req, res) => {
     }
 })
 
+// Login route
+
 authRouter.post("/login", async (req, res) => {
 
     try {
@@ -164,6 +183,61 @@ authRouter.post("/login", async (req, res) => {
         });
     }
 })
+
+
+authRouter.post("/forgot", async (req, res) => {
+    
+    //generating the otp, to be sent to the user
+    changePassOtp = Math.floor(100000 + Math.random() * 900000);
+    console.log(req.body.email);
+    const mailData = {
+        from: process.env.EMAIL,
+        to: req.body.email,
+        subject: "Forgot password OTP for Secure Diary",
+        text: "You've Succesfully sent an email",
+        html: `<p>Hello ${name}. Your Email Verification OTP is : ${changePassOtp} </p>`
+    };
+    const sendMail = await transporter.sendMail(mailData);
+    console.log(sendMail);
+    return res.redirect(`/auth/changePassword/`+req.body.email); //redirecting the user to the change password form
+})
+
+authRouter.post("/changePass", async (req, res) => {
+
+    try {
+        const {
+            OTP,
+            email,
+            password,
+            cpassword
+        } = req.body;
+
+        if (changePassOtp === parseInt(OTP) && password === cpassword) {
+
+            const salt = await bcrypt.genSalt(10);
+            //hashing the password
+            const hashPass = await bcrypt.hash(password, salt);
+            const result = await User.findOneAndUpdate({
+                email: email
+            }, {$set:{
+                password: hashPass
+            }},{new:true});
+
+            if (result) {
+                console.log("Password updated successfully");
+            } else {
+                console.log("Failed to update password!");
+            }
+        } else {
+            console.log("OTP verification failed,");
+        }
+    } catch (error) {
+        console.log("Server Error")
+    }
+
+});
+
+// Session verification
 
 authRouter.get("/protected", verify, (req, res) => {
     console.log("Reached protected");
