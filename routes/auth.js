@@ -3,6 +3,8 @@ const User = require("../models/User");
 const nodemailer = require("nodemailer");
 const axios = require("axios");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const verify = require("../middlewares/verify");
 
 let otp;
 
@@ -47,9 +49,10 @@ authRouter.post("/register", async (req, res) => {
     email = req.body.email;
     password = req.body.password;
 
-    const user=await User.findOne({email:email});
-    if(user)
-    {
+    const user = await User.findOne({
+        email: email
+    });
+    if (user) {
         return res.status(400).json("Email not available! Choose a different email");
     }
 
@@ -98,10 +101,11 @@ authRouter.post("/otp", async (req, res) => {
 
             if (user) {
                 console.log("User created successfully!");
-                return res.status(200).json({
-                    message: "User created successfully",
-                    user: user
-                });
+                // return res.status(200).json({
+                //     message: "User created successfully",
+                //     user: user
+                // });
+                return res.redirect("/login");
             }
         } else {
             console.log("Invalid OTP");
@@ -136,6 +140,16 @@ authRouter.post("/login", async (req, res) => {
         if (user) {
             const result = await bcrypt.compare(password, user.password);
             if (result) {
+
+                const token = jwt.sign({
+                    userId: user._id
+                }, process.env.JWT_KEY);
+
+                res.cookie("secret", token, {
+                    maxAge: 86400,
+                    httpOnly: true
+                });
+
                 console.log("User signed in successfully!");
                 return res.status(200).json("User signed in successfully!");
             }
@@ -149,6 +163,10 @@ authRouter.post("/login", async (req, res) => {
             error: error
         });
     }
+})
+
+authRouter.get("/protected", verify, (req, res) => {
+    console.log("Reached protected");
 })
 
 module.exports = authRouter;
