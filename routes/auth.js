@@ -25,6 +25,8 @@ let transporter = nodemailer.createTransport({
 //Creating Router
 const authRouter = express.Router();
 
+// GET Routes
+
 authRouter.get("/", async (req, res) => {
     res.render("home");
 })
@@ -66,6 +68,10 @@ authRouter.post("/register", async (req, res) => {
     email = req.body.email;
     password = req.body.password;
 
+    // console.log(name);
+    // console.log(email);
+    // console.log(password);
+
     const user = await User.findOne({
         email: email
     });
@@ -82,7 +88,12 @@ authRouter.post("/register", async (req, res) => {
         html: `<p>Hello ${name}. Your Email Verification OTP is : ${otp} </p>`
     };
     const sendMail = await transporter.sendMail(mailData);
-    return res.redirect("/auth/takeOTP"); //redirecting the user to the OTP input form
+
+    if(sendMail){
+        console.log(sendMail);
+        //res.redirect("/auth/takeOTP"); //redirecting the user to the OTP input form 
+        return res.json("OTP sent successfully!");
+    }
 
     // const result = await axios({
     //     method: "GET",
@@ -98,9 +109,12 @@ authRouter.post("/otp", async (req, res) => {
         //getting the user otp
         const userOTP = req.body.otp;
 
+        console.log(userOTP);
+
         //comparing the generated otp with the user's otp
         if (parseInt(userOTP) === otp) {
 
+            otp=null;
             //generating salt
             const salt = await bcrypt.genSalt(10);
 
@@ -122,7 +136,9 @@ authRouter.post("/otp", async (req, res) => {
                 //     message: "User created successfully",
                 //     user: user
                 // });
-                return res.redirect("/login");
+
+                return res.json("Registration successful!");
+                // return res.redirect("/login");
             }
         } else {
             console.log("Invalid OTP");
@@ -145,6 +161,8 @@ authRouter.post("/login", async (req, res) => {
     try {
 
         console.log(req.body);
+
+        
         const {
             email,
             password
@@ -154,10 +172,13 @@ authRouter.post("/login", async (req, res) => {
             email: email
         });
 
+        // const users=await User.find();
         console.log(user);
+        // console.log(users);
 
         if (user) {
-            const result = await bcrypt.compare(password, user.password);
+            const result = await bcrypt.compare(password,user.password);
+            console.log(result);
             if (result) {
 
                 const token = jwt.sign({
@@ -171,9 +192,13 @@ authRouter.post("/login", async (req, res) => {
 
                 console.log("User signed in successfully!");
                 return res.status(200).json("User signed in successfully!");
+            }else{
+                console.log("Invalid email or Password");
+                return res.json("Invalid email or Password");
             }
         } else {
-            console.log("Invalid email or password");
+            console.log("User not found");
+            return res.json("User not found")
         }
     } catch (error) {
         console.log(error);
@@ -186,7 +211,7 @@ authRouter.post("/login", async (req, res) => {
 
 
 authRouter.post("/forgot", async (req, res) => {
-    
+
     //generating the otp, to be sent to the user
     changePassOtp = Math.floor(100000 + Math.random() * 900000);
     console.log(req.body.email);
@@ -199,7 +224,7 @@ authRouter.post("/forgot", async (req, res) => {
     };
     const sendMail = await transporter.sendMail(mailData);
     console.log(sendMail);
-    return res.redirect(`/auth/changePassword/`+req.body.email); //redirecting the user to the change password form
+    return res.redirect(`/auth/changePassword/` + req.body.email); //redirecting the user to the change password form
 })
 
 authRouter.post("/changePass", async (req, res) => {
@@ -208,39 +233,44 @@ authRouter.post("/changePass", async (req, res) => {
         const {
             OTP,
             email,
-            password,
-            cpassword
+            password
         } = req.body;
 
-        if (changePassOtp === parseInt(OTP) && password === cpassword) {
+        if (changePassOtp === parseInt(OTP)) {
 
+            changePassOtp=null;
             const salt = await bcrypt.genSalt(10);
             //hashing the password
             const hashPass = await bcrypt.hash(password, salt);
             const result = await User.findOneAndUpdate({
                 email: email
-            }, {$set:{
-                password: hashPass
-            }},{new:true});
+            }, {
+                $set: {
+                    password: hashPass
+                }
+            }, {
+                new: true
+            });
 
             if (result) {
                 console.log("Password updated successfully");
+                return res.json("Password updated successfully");
             } else {
                 console.log("Failed to update password!");
+                return res.json("Failed to update password!")
             }
         } else {
-            console.log("OTP verification failed,");
+            console.log("OTP verification failed!");
+            return res.json("OTP verification failed!")
         }
     } catch (error) {
-        console.log("Server Error")
+        console.log("Server Error");
+        return res.json("Failed to update password, internal server error");
     }
 
 });
 
 // Session verification
 
-authRouter.get("/protected", verify, (req, res) => {
-    console.log("Reached protected");
-})
 
 module.exports = authRouter;

@@ -9,9 +9,31 @@
 <body>
     <h1>OTP input form</h1>
 
-    <form action="/auth/otp" method="post">
+    <form onsubmit="event.preventDefault(); validate(this)">
         <input type="text" name="otp">
         <button type="submit">Send OTP</button>
     </form>
+
+    <script>
+        async function validate(e) {
+
+            let otp=document.getElementsByTagName("input")[0].value;
+
+            const response=await fetch("/auth/otp",{
+                method:"POST",
+                mode:"cors",
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({otp:otp})
+            });
+
+            if(response){
+                const json=await response.json();
+                console.log(json);
+
+                window.location.href="/auth/login";
+            }
+            
+        }
+    </script>
 </body>
 </html>
