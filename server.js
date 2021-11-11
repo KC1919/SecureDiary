@@ -19,8 +19,11 @@ app.use(express.urlencoded({
 
 
 const authRouter=require("./routes/auth");
+const noteRouter=require("./routes/notes");
 
 app.use("/auth",authRouter);
+app.use("/notes",noteRouter);
+
 
 
 const db=require("./db");

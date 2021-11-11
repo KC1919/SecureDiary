@@ -5,14 +5,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OTP</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    />
 </head>
 <body>
-    <h1>OTP input form</h1>
-
-    <form onsubmit="event.preventDefault(); validate(this)">
-        <input type="text" name="otp">
-        <button type="submit">Send OTP</button>
-    </form>
+    <div class="text-center mt-3">
+        <h2 class="mb-3">OTP input form</h2>
+    
+        <form onsubmit="event.preventDefault(); validate(this)">
+            <label for="otp">Enter OTP:</label>
+            <input type="text" name="otp">
+            <button class="btn-sm btn-primary" type="submit">Send OTP</button>
+        </form>
+    </div>
 
     <script>
         async function validate(e) {

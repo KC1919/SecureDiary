@@ -207,7 +207,7 @@ authRouter.post("/login", async (req, res) => {
             error: error
         });
     }
-})
+})                          
 
 
 authRouter.post("/forgot", async (req, res) => {
