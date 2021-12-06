@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const CryptoJS = require("crypto-js");
 const multer = require("multer");
 const fs = require('fs');
 const jimp = require("jimp");
@@ -25,15 +26,24 @@ noteRouter.get("/upload", (req, res) => {
 });
 
 noteRouter.post("/upload", upload.single('uploadImage'), async (req, res) => {
-    console.log(req.file);
+    // console.log(req.file);
 
     const buffer = fs.readFileSync('./images/Capture.png');
-    console.log(buffer);
+    // console.log(buffer);
 
-    const result = await jimp.read(buffer, (err, res) => {
-        if (err) throw new Error(err);
-        res.quality(10).write("./images/resizeCapture.jpg");
-    });
+    buff = buffer.toString()
+    console.log(buff);
+    // Encrypt
+    var ciphertext = CryptoJS.AES.encrypt(buff, 'secret key 123').toString();
+
+    // Decrypt
+    var bytes = CryptoJS.AES.decrypt(ciphertext, 'secret key 123');
+    var originalText = bytes.toString(CryptoJS.enc.Utf8);
+
+    // const result = await jimp.read(buffer, (err, res) => {
+    //     if (err) throw new Error(err);
+    //     res.quality(10).write("./images/resizeCapture.jpg");
+    // });
 
     // if (result) {
     //     newBuffer = fs.readFileSync('./images/resizeCapture.jpg');
@@ -41,6 +51,7 @@ noteRouter.post("/upload", upload.single('uploadImage'), async (req, res) => {
 
     //     res.send("File uploaded!")
     // }
+    // console.log(originalText);
 })
 
 module.exports = noteRouter;
