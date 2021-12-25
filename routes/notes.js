@@ -61,7 +61,6 @@ noteRouter.post("/upload", upload.single('uploadImage'), async (req, res) => {
     // console.log(originalText);
 })
 
-<<<<<<< HEAD
 noteRouter.get("/show",(req,res)=>{
     res.render("show",{"buffer":buffer});
 })
@@ -75,6 +74,4 @@ noteRouter.get("/zingo",(req,res)=>{
 })
 
 module.exports = noteRouter;
-=======
 module.exports = noteRouter;
->>>>>>> abe1341509c375540c83d1277aab238ea02cb57b
