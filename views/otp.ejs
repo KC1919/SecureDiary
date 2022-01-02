@@ -28,7 +28,6 @@
 
             const response=await fetch("/auth/otp",{
                 method:"POST",
-                mode:"cors",
                 headers:{'Content-Type':'application/json'},
                 body:JSON.stringify({otp:otp})
             });
@@ -37,7 +36,13 @@
                 const json=await response.json();
                 console.log(json);
 
-                window.location.href="/auth/login";
+                if(response=="success"){
+                    alert("Invalid OTP, registration failed!");
+                    window.location.href="/auth/register";
+                }else{
+                    alert("Registered Successfully!");
+                    window.location.href="/auth/login";
+                }
             }
             
         }

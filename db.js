@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 
 const db=async ()=>{
-    url = `mongodb+srv://dbUser:${process.env.DB_PASS}@securediary.vxvvb.mongodb.net/secureDB`;
+    // url = `mongodb+srv://dbUser:${process.env.DB_PASS}@securediary.vxvvb.mongodb.net/secureDB`;
+    url='mongodb://localhost:27017/secureDiary';
     try {
         mongoose.connect(url);
         console.log("Connected to DB successfully!");

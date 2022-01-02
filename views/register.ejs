@@ -34,10 +34,12 @@
               </div>
 
               <div class="form-group mb-4">
+                <p style="color: #B0ADB5;"><small>Password should contain atleast one special character eg. @ or $ etc, an upper case letter</small></p>
                 <label for="password">Password</label>
                 <input type="password" name="password" id="password" class="form-control"
                   placeholder="Create your passsword" minlength="8" maxlength="15" required>
                 <label for="password">Repeat Password</label>
+                
                 <input type="password" name="cpassword" id="cpassword" class="form-control"
                   placeholder="Confirm your passsword" minlength="8" maxlength="15" required>
               </div>
@@ -69,7 +71,7 @@
         const cpassword = inputs[3].value;
 
         const data = {
-          name: name,
+          name: name,  
           email: email,
           password: password,
         }
@@ -77,6 +79,7 @@
         // console.log(data);
         if (password !== cpassword) {
           alert("Passwords do not match!");
+          return;
         }
         else {
           const response = await fetch("/auth/register", {

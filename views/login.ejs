@@ -105,7 +105,10 @@
 
           const json = await response.json();
           
-          alert(json);
+          // alert(json);
+          if(json=="success"){
+            window.location.replace("http://localhost:3000/notes/textNotes");
+          }
 
         } catch (error) {
           console.log(error);

@@ -31,6 +31,11 @@ authRouter.get("/", async (req, res) => {
     res.render("home");
 })
 
+authRouter.get("/working",verify,(req,res)=>{
+    res.render("index");
+})
+
+
 authRouter.get("/register", async (req, res) => {
     res.render("register");
 })
@@ -95,6 +100,11 @@ authRouter.post("/register", async (req, res) => {
         return res.json("OTP sent successfully!");
     }
 
+    else{
+        console.log("error in registering!");
+        return;
+    }
+
     // const result = await axios({
     //     method: "GET",
     //     url: "http://localhost:3000/auth/takeOTP"
@@ -137,12 +147,12 @@ authRouter.post("/otp", async (req, res) => {
                 //     user: user
                 // });
 
-                return res.json("Registration successful!");
+                return res.status(200).json("success");
                 // return res.redirect("/login");
             }
         } else {
             console.log("Invalid OTP");
-            return res.status(401).json("Invalid OTP");
+            return res.status(401).json("failure");
         }
         otp = "";
     } catch (error) {
@@ -191,7 +201,8 @@ authRouter.post("/login", async (req, res) => {
                 });
 
                 console.log("User signed in successfully!");
-                return res.status(200).json("User signed in successfully!");
+                return res.status(200).json("success");
+                
             }else{
                 console.log("Invalid email or Password");
                 return res.json("Invalid email or Password");
