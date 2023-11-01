@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Show</title>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <h1 class="text-center mt-3">My Secrets</h1>
+    <div class="container d-flex text-center">
+        <%notes.forEach(note=>{%>
+            <div class="mx-3 text-center">
+                <h2>
+                    <%=note.title%>
+                </h2>
+                <p style="text-align: center; word-wrap: break-word">
+                    <%-note.data.slice(0,60)%>
+                </p>
+                <button class="btn btn-sm btn-primary" type="button" onclick="handleClick(event)"
+                    value=<%=note._id%>
+                    >Decrypt
+                </button>
+            </div>
+            <%})%>
+    </div>
+
+    <script>
+        async function handleClick(e) {
+            const password = prompt("Enter password");
+
+            console.log(password);
+
+            console.log(e.target.value);
+
+            noteId = e.target.value;
+
+            let resp = await fetch("/notes/decrypt", {
+                method: "POST",
+                mode: "cors",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify({ noteId, password }),
+            });
+
+            const jsonData = await resp.json();
+            const data = jsonData.data;
+
+            if (data.length == 0) {
+                alert("Wrong password!");
+            } else {
+                let filename=new Date().toLocaleString();
+                download(date,data);
+            }
+        }
+
+        function download(filename,text) {
+            var element = document.createElement("a");
+            element.setAttribute(
+                "href",
+                "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+            );
+            element.setAttribute("download", filename);
+
+            element.style.display = "none";
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        }
+    </script>
+</body>
+
+</html>

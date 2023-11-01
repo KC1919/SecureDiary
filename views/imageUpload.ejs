@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+</head>
+
+<body>
+    <div class="text-center mt-4">
+        <div class="my-2">
+            <label for="fileupload">Choose a ".jpg or .png" file: </label>
+            <input type="file" id="imageUpload" onchange="handleChange(event)" required />
+        </div>
+
+        <div class="my-2">
+            <label for="title">Title: </label>
+            <input type="text" id="title" placeholder="Enter title" />
+        </div>
+
+        <div class="my-2">
+            <label for="password">Password: </label>
+            <input type="password" id="password"  placeholder="Enter key" minlength=8 maxlength=20
+                required />
+        </div>
+
+        <button class="btn btn-primary">Encrypt</button>
+
+    </div>
+    <script>
+        async function handleChange(e) {
+            try {
+
+                let file=e.target.files[0];
+
+                file.getImageData
+                let resp=await fetch("/notes/imageUpload",{
+                    method:"POST",
+                    mode:"cors",
+                    body:{file}
+                })
+                
+                console.log(resp);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    </script>
+</body>
+
+<!-- <body>
+
+    <input type="file" id="my-image" onchange="getDataUrl(event)" name="image">
+    <script>
+        function getDataUrl(img) {
+        // Create canvas
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        // Set width and height
+        canvas.width = img.width;
+        canvas.height = img.height;
+        // Draw the image
+        ctx.drawImage(img, 0, 0);
+        return canvas.toDataURL('image/jpeg');
+     }
+     // Select the image
+     const img = document.querySelector('#my-image');
+     img.addEventListener('load', function (event) {
+        const dataUrl = getDataUrl(event.currentTarget);
+        console.log(dataUrl);
+     });
+    </script>
+    
+</body> -->
+
+
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    />
+</head>
+<body>
+    <div class="text-center mt-3">
+        <h2 class="mb-3">OTP input form</h2>
+    
+        <form onsubmit="event.preventDefault(); validate(this)">
+            <label for="otp">Enter OTP:</label>
+            <input type="text" name="otp">
+            <button class="btn-sm btn-primary" type="submit">Send OTP</button>
+        </form>
+    </div>
+
+    <script>
+        async function validate(e) {
+
+            let otp=document.getElementsByTagName("input")[0].value;
+
+            const response=await fetch("/auth/otp",{
+                method:"POST",
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({otp:otp})
+            });
+
+            if(response){
+                const json=await response.json();
+                console.log(json);
+
+                if(response=="success"){
+                    alert("Invalid OTP, registration failed!");
+                    window.location.href="/auth/register";
+                }else{
+                    alert("Registered Successfully!");
+                    window.location.href="/auth/login";
+                }
+            }
+            
+        }
+    </script>
+</body>
+</html>

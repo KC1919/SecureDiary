@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text Upload</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <div class="text-center mt-4">
+        <div class="my-2">
+            <label for="fileupload">Choose a ".txt" file: </label>
+            <input type="file" id="textUpload" onchange="change(event)" required />
+        </div>
+
+        <div class="my-2">
+            <label for="title">Title: </label>
+            <input type="text" id="title" placeholder="Enter title" />
+        </div>
+
+        <div class="my-2">
+            <label for="password">Password: </label>
+            <input type="password" id="password" onchange="pass(event)" placeholder="Enter key" minlength=8 maxlength=20
+                required />
+        </div>
+
+        <button class="btn btn-primary" onclick="handleClick(this)">Encrypt</button>
+
+    </div>
+
+    <script>
+
+        let fileContent = "";
+
+        async function change(e) {
+            var fr = new FileReader();
+
+            let file = e.target.files[0];
+
+            if (file.size > 2 * (1024 * 1024)) {
+                alert("Please choose files smaller than 2mb.");
+                return;
+            } else {
+                fileContent = await file.text();
+                // console.log(fileContent);
+            }
+        }
+
+        async function pass(e) {
+            let secret = document.getElementById("password").value;
+            let title = document.getElementById("title").value;
+            console.log(secret + " " + title);
+            sendData(fileContent, secret, title);c
+        }
+
+        async function sendData(data, secret, title) {
+            let response = await fetch("/notes/text", {
+                method: 'post',
+                mode: 'cors',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({ data, secret, title })
+            });
+            let json = await response.json();
+            console.log(json);
+        }
+
+        async function handleClick(e) {
+
+            let elements = document.querySelectorAll("input");
+
+            console.log(elements);
+
+            await elements.forEach(element => {
+                element.value = null;
+            });
+
+            alert("File encrypted");
+
+            window.location.replace("/notes/textNotes");
+
+        }
+    </script>
+</body>
+
+</html>

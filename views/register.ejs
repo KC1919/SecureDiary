@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Login</title>
+  <link href="https://fonts.googleapis.com/css?family=Karla:400,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.8.95/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/login.css">
+</head>
+
+<body>
+  <main>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-6 login-section-wrapper">
+
+          <div class="login-wrapper my-auto">
+            <h1 class="login-title">Sign in</h1>
+            <form onsubmit="event.preventDefault(); validate(this);">
+
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" name="name" id="name" class="form-control" placeholder="Full Name" required>
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" class="form-control" placeholder="email@example.com"
+                  required>
+              </div>
+
+              <div class="form-group mb-4">
+                <p style="color: #B0ADB5;"><small>Password should contain atleast one special character eg. @ or $ etc, an upper case letter</small></p>
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" class="form-control"
+                  placeholder="Create your passsword" minlength="8" maxlength="15" required>
+                <label for="password">Repeat Password</label>
+                
+                <input type="password" name="cpassword" id="cpassword" class="form-control"
+                  placeholder="Confirm your passsword" minlength="8" maxlength="15" required>
+              </div>
+
+              <button name="login" id="login" class="btn btn-block login-btn" type="submit">Sign-up</button>
+
+            </form>
+
+            <p class="login-wrapper-footer-text">Already have an account? <a href="/auth/login"
+                class="text-reset"><em>Login here</em></a></p>
+          </div>
+        </div>
+        <div class="col-sm-6 px-0 d-none d-sm-block">
+          <img src="/images/login.jpg" alt="login image" class="login-img">
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    async function validate(e) {
+
+      try {
+        let inputs = document.getElementsByTagName("input");
+
+        const name = inputs[0].value;
+        const email = inputs[1].value;
+        const password = inputs[2].value;
+        const cpassword = inputs[3].value;
+
+        const data = {
+          name: name,  
+          email: email,
+          password: password,
+        }
+
+        // console.log(data);
+        if (password !== cpassword) {
+          alert("Passwords do not match!");
+          return;
+        }
+        else {
+          const response = await fetch("/auth/register", {
+            method: "POST",
+            mode: "cors",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+
+          if (response) {
+            window.location.href = "/auth/takeOTP";
+          }
+          // console.log(response);
+        }
+      } catch (error) {
+        console.log(error);
+        alert("An error occurred!");
+      }
+
+    }
+  </script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</body>
+
+</html>
